@@ -1,13 +1,15 @@
 steps:
-  - name: "gcr.io/cloud-builders/git"
-    entrypoint: "bash"
-    args: ["-c", "git clone <your-repo-url> /workspace/repo"]
+  - name: 'gcr.io/cloud-builders/git'
+    args: ['clone', 'https://github.com/your-repo-url.git']
 
-  - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/my-web-app", "."]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/web-server', '.']
 
-  - name: "gcr.io/cloud-builders/gcloud"
-    args: ["compute", "scp", "my-web-app", "<your-instance-name>:~/"]
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: [
+      'compute', 'ssh', 'web-server',
+      '--command', 'docker run -d -p 80:80 gcr.io/$PROJECT_ID/web-server'
+    ]
 
-  - name: "gcr.io/cloud-builders/gcloud"
-    args: ["compute", "ssh", "<your-instance-name>", "--command", "sudo systemctl restart nginx"]
+images:
+  - 'gcr.io/$PROJECT_ID/web-server'
