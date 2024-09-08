@@ -1,0 +1,13 @@
+steps:
+  - name: "gcr.io/cloud-builders/git"
+    entrypoint: "bash"
+    args: ["-c", "git clone <your-repo-url> /workspace/repo"]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/my-web-app", "."]
+
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: ["compute", "scp", "my-web-app", "<your-instance-name>:~/"]
+
+  - name: "gcr.io/cloud-builders/gcloud"
+    args: ["compute", "ssh", "<your-instance-name>", "--command", "sudo systemctl restart nginx"]
